@@ -1,3 +1,5 @@
 NodeCS/bin/*
 NodeCS/obj/*
 .vs/*
+NodeCS-Tests/bin/*
+NodeCS-Tests/obj/*
