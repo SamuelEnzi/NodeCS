@@ -2,28 +2,29 @@
 using NodeCS.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace NodeCS
 {
     public class Router
     {
+        public delegate void PathNotFoundEventHandler(HttpListenerRequest request, HttpListenerResponse response);
+        public event PathNotFoundEventHandler PathNotFound;
+
         public int Port { get; private set; }
         public HttpListener Server { get; private set; }
         public bool IsRunning { get; private set; } = false;
         public List<object> Modules = new List<object>();
+        private readonly Func<HttpListenerRequest, HttpListenerResponse, bool> Callback;
 
-
-        public Router(int port, List<object> modules)
+        public Router(int port, List<object> modules, Func<HttpListenerRequest, HttpListenerResponse, bool> callback = null)
         {
             if (!HttpListener.IsSupported)
                 throw new Exception("HttpListener not supported");
 
+            this.Callback = callback;
             this.Modules = modules;
 
             Server = new HttpListener();
@@ -44,12 +45,19 @@ namespace NodeCS
                     var context = Server.GetContext();
                     var request = context.Request;
                     var response = context.Response;
+
+                    var cont = Callback?.Invoke(request, response);
+                    if(cont == false)
+                    {
+                        response.End();
+                        continue;
+                    }
+
                     var selected = Handle(request.RawUrl.GetPath(), request, response);
 
                     if (!selected)
                     {
-                        response.StatusCode = 404;
-                        response.Send("<html><body>404</body></html>");
+                        PathNotFound?.Invoke(request,response);
                         response.End();
                         continue;
                     }
