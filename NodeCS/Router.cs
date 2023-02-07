@@ -1,9 +1,8 @@
-﻿using NodeCS.Attributes;
-using NodeCS.Helpers;
+﻿using NodeCS.Helpers;
+using NodeCS.Services;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Reflection;
 using System.Threading;
 
 namespace NodeCS
@@ -16,19 +15,30 @@ namespace NodeCS
         public int Port { get; private set; }
         public HttpListener Server { get; private set; }
         public bool IsRunning { get; private set; } = false;
-        public List<object> Modules = new List<object>();
-        private readonly Func<HttpListenerRequest, HttpListenerResponse, bool> Callback;
+        private Func<HttpListenerRequest, HttpListenerResponse, bool> Callback;
+        private ModuleCompiler moduleCompiler;
 
-        public Router(int port, List<object> modules, Func<HttpListenerRequest, HttpListenerResponse, bool> callback = null)
+        public Router(int port, List<object> modules)
         {
             if (!HttpListener.IsSupported)
                 throw new Exception("HttpListener not supported");
 
-            this.Callback = callback;
-            this.Modules = modules;
+            this.Port = port;
+            moduleCompiler = new ModuleCompiler(modules);
 
+            Compile();
+        }
+
+        private void Compile()
+        {
+            moduleCompiler.Compile();
+        }
+
+        public void Listen(Func<HttpListenerRequest, HttpListenerResponse, bool> callback = null)
+        {
+            this.Callback = callback;
             Server = new HttpListener();
-            Server.Prefixes.Add($"http://*:{port}/");
+            Server.Prefixes.Add($"http://*:{Port}/");
             Start();
         }
 
@@ -53,7 +63,7 @@ namespace NodeCS
                         continue;
                     }
 
-                    var selected = Handle(request.RawUrl.GetPath(), request, response);
+                    var selected = moduleCompiler.Handle(request.GetPath(), request, response);
 
                     if (!selected)
                     {
@@ -65,32 +75,6 @@ namespace NodeCS
                     response.End();
                 }
             }).Start();
-        }
-
-        private bool Handle(string path, HttpListenerRequest request, HttpListenerResponse response)
-        {
-            foreach (var obj in Modules)
-            {
-                var methods = obj.GetType().GetMethods();
-                foreach (var method in methods)
-                    foreach (var attribute in method.GetCustomAttributes())
-                        if (attribute.GetType() == typeof(EndpointAttribute))
-                            if(((EndpointAttribute)attribute).Path == path)
-                                if (IsValidMethod(method.GetParameters()))
-                                {
-                                    method.Invoke(obj, new object[] { request, response });
-                                    return true;
-                                }
-            }
-            return false;
-        }
-
-
-        private bool IsValidMethod(ParameterInfo[] parameterInfo)
-        {
-            if (parameterInfo.Length != 2) return false;
-            if (parameterInfo[0].ParameterType == typeof(HttpListenerRequest) && parameterInfo[1].ParameterType == typeof(HttpListenerResponse)) return true;
-            return false;
         }
     }
 }

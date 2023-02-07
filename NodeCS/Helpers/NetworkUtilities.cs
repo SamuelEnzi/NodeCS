@@ -49,9 +49,6 @@ namespace NodeCS.Helpers
                     yield return (request.QueryString.Keys[i], request.QueryString.GetValues(i));
         }
 
-        public static string GetPath(this HttpListenerRequest request) =>
-            request.UrlReferrer?.AbsolutePath ?? string.Empty;
-
         public static IEnumerable<(string key, string[] value)> GetHeaderData(this HttpListenerRequest request)
         {
             for (int i = 0; i < request.Headers.Keys.Count; i++)
@@ -71,7 +68,7 @@ namespace NodeCS.Helpers
         public static string Serialize(this object obj) =>
             JsonConvert.SerializeObject(obj);
 
-        public static string GetPath(this string rawPath) =>
-            rawPath.Split('?')[0];
+        public static string GetPath(this HttpListenerRequest req) =>
+            req.RawUrl.Split('?')[0];
     }
 }

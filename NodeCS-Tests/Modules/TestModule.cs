@@ -8,16 +8,16 @@ namespace NodeCS_Tests.Modules
     {
         public int counter { get; set; } = 0;
 
-        [Endpoint("/test")]
-        public void TestMethod(HttpListenerRequest request, HttpListenerResponse response)
+        [Endpoint("/test/:id/porcodio")]
+        public void TestMethod(HttpListenerRequest request, HttpListenerResponse response, Dictionary<string, string> parameters)
         {
             response.ContentType = "application/json";
-            response.Send(new Data() { count = counter++ }.Serialize());
+            response.Send(new Data() { param = parameters["id"], count = counter++ }.Serialize());
             response.End();
         }
 
-        [Endpoint("/test2")]
-        public void Test2Method(HttpListenerRequest request, HttpListenerResponse response)
+        [Endpoint("/test2", httpMethod: "POST")]
+        public void Test2Method(HttpListenerRequest request, HttpListenerResponse response, Dictionary<string, string> parameters)
         {
             response.Send("<html><body>HELLO TEST 2</body></html>");
             response.End();
@@ -26,7 +26,7 @@ namespace NodeCS_Tests.Modules
 
     public class Data
     {
-        public string base64 { get; set; } = "daiocen";
+        public string param { get; set; } = "daiocen";
         public int count = 0;
     }
 }
