@@ -23,6 +23,8 @@ namespace NodeCS
             if (!HttpListener.IsSupported)
                 throw new Exception("HttpListener not supported");
 
+            Log.WriteLine($"setting up router");
+
             this.Port = port;
             moduleCompiler = new ModuleCompiler(modules);
 
@@ -31,15 +33,22 @@ namespace NodeCS
 
         private void Compile()
         {
+            Log.WriteLine($"compileing endpoints");
             moduleCompiler.Compile();
+            Log.WriteLine($"\nendpoints compiled", ConsoleColor.Green);
+            foreach (var endpoint in moduleCompiler.Endpoints)
+                Log.WriteLine($"    [{endpoint.HttpMethod.ToUpper()}] {endpoint.Path}");
+            Log.WriteLine();
         }
 
         public void Listen(Func<HttpListenerRequest, HttpListenerResponse, bool> callback = null)
         {
+            Log.WriteLine($"starting server");
             this.Callback = callback;
             Server = new HttpListener();
             Server.Prefixes.Add($"http://*:{Port}/");
             Start();
+            Log.WriteLine($"listening on {$"http://*:{Port}/"}", ConsoleColor.Green);
         }
 
         private void Start()

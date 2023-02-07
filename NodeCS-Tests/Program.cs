@@ -21,5 +21,4 @@ router.Listen((req, res) =>
     return true;
 });
 
-Console.WriteLine($"listening on localhost:3000");
 Console.ReadLine();

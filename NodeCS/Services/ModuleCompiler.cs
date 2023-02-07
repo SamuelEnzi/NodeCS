@@ -30,6 +30,11 @@ namespace NodeCS.Services
                                         method, 
                                         ((EndpointAttribute)attribute).HttpMethod)
                                     );
+                            else
+                            {
+                                Log.WriteLine($"[{obj.GetType().FullName}.{method.Name}] was decleard as endpoint but implements invalid parameters. \nMake sure to implement the following signature:", System.ConsoleColor.DarkYellow);
+                                Log.WriteLine($"void name (HttpListenerRequest, HttpListenerResponse, Dictionary<string, string>)\n", System.ConsoleColor.Red);
+                            }
             }
         }
 

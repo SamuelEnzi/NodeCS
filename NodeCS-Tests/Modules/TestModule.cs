@@ -16,7 +16,7 @@ namespace NodeCS_Tests.Modules
             response.End();
         }
 
-        [Endpoint("/test2", httpMethod: "POST")]
+        [Endpoint("/test2")]
         public void Test2Method(HttpListenerRequest request, HttpListenerResponse response, Dictionary<string, string> parameters)
         {
             response.Send("<html><body>HELLO TEST 2</body></html>");
