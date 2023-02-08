@@ -35,6 +35,12 @@ namespace NodeCS.Helpers
             catch { }
         }
 
+        public static string Read(this HttpListenerRequest request)
+        {
+            using(var reader = new StreamReader(request.InputStream, request.ContentEncoding))
+                return reader.ReadToEnd();
+        }
+
         public static void End(this HttpListenerResponse response)
         {
 
