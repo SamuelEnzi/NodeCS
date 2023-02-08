@@ -10,7 +10,11 @@ namespace NodeCS
     public class Router
     {
         public delegate void PathNotFoundEventHandler(HttpListenerRequest request, HttpListenerResponse response);
+        public delegate void HandleExceptionEventHandler(HttpListenerRequest request, HttpListenerResponse response, Exception exception);
+
         public event PathNotFoundEventHandler PathNotFound;
+        public event HandleExceptionEventHandler HandleException;
+
 
         public int Port { get; private set; }
         public HttpListener Server { get; private set; }
@@ -65,23 +69,29 @@ namespace NodeCS
                     var request = context.Request;
                     var response = context.Response;
 
-                    var cont = Callback?.Invoke(request, response);
-                    if(cont == false)
+                    try
+                    {
+                        var cont = Callback?.Invoke(request, response);
+                        if (cont == false)
+                        {
+                            response.End();
+                            continue;
+                        }
+
+                        var selected = moduleCompiler.Handle(request.GetPath(), request, response);
+
+                        if (!selected)
+                        {
+                            PathNotFound?.Invoke(request, response);
+                            response.End();
+                            continue;
+                        }
+                    }
+                    catch (Exception ex){ HandleException?.Invoke(request, response, ex); }
+                    finally
                     {
                         response.End();
-                        continue;
                     }
-
-                    var selected = moduleCompiler.Handle(request.GetPath(), request, response);
-
-                    if (!selected)
-                    {
-                        PathNotFound?.Invoke(request,response);
-                        response.End();
-                        continue;
-                    }
-
-                    response.End();
                 }
             }).Start();
         }

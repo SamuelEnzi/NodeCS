@@ -31,14 +31,14 @@ namespace NodeCS.Helpers
             {
                 using (var writer = new StreamWriter(response.OutputStream))
                     writer.Write(message);
-
-                response.OutputStream.Flush();
             }
             catch { }
         }
 
         public static void End(this HttpListenerResponse response)
         {
+
+            response.OutputStream.Flush();
             response.OutputStream.Close();
         }
 
