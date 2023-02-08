@@ -61,3 +61,9 @@ public class Data
 In this class 2 endpoints are defined. Endpoint methods are extended with the `EndpointAttribute`. The path and the `HttpMethod` of the endpoint can be specified.
 
 if a segment of a path starts with `:` it is treated as a parameter. All parameters are parsed as string and passed in the `Dictionary parameters`. 
+
+## IMPORTANT
+Make sure to create a Firewall rule and:
+- run the Server using Administrator privileges. 
+   **OR**
+- See [this](https://learn.microsoft.com/en-us/windows/win32/http/add-urlacl) for more info.
