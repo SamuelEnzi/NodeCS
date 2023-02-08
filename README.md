@@ -64,7 +64,7 @@ if a segment of a path starts with `:` it is treated as a parameter. All paramet
 
 ## IMPORTANT
 Make sure to create a Firewall rule for external access and:
-- run the Server using Administrator privileges. 
+- Run the Server using Administrator privileges. 
 
    **OR**
 - See [this](https://learn.microsoft.com/en-us/windows/win32/http/add-urlacl) for more info.
