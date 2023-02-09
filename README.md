@@ -1,7 +1,7 @@
 # NodeCS
 
 This Library can be used to create HTTP Servers.
-It was inspired by [NodeJS](https://nodejs.org/en/docs/) and can be used to create RESTFUL apis or other server services.
+It was inspired by [NodeJS](https://nodejs.org/en/docs/) and can be used to create RESTFUL apis or other services.
 
 To create a server, you must first define a router. This handles all connections and resolves the path to the correct endpoint.
 
