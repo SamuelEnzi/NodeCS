@@ -15,7 +15,7 @@ var router =
 ```
 
 In the constructor of the class the port and the modules containing endpoints are specified.
-To start the Server call the `Listen` method:
+To start the server call the `Listen` method:
 
 ```csharp
 router.Listen((req, res) =>
