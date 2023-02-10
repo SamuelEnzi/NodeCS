@@ -35,6 +35,16 @@ namespace NodeCS.Helpers
             catch { }
         }
 
+        public static Dictionary<string, string[]> GetHeaders(this HttpListenerRequest request)
+        {
+            Dictionary<string, string[]> keyvalue = new Dictionary<string, string[]>();
+            var keys = request.Headers.AllKeys;
+            for(int i = 0; i < keys.Length; i++)
+                keyvalue.Add(keys[i], request.Headers.GetValues(i));
+            return keyvalue;
+        }
+
+
         public static string Read(this HttpListenerRequest request)
         {
             using(var reader = new StreamReader(request.InputStream, request.ContentEncoding))
