@@ -15,7 +15,6 @@ namespace NodeCS
         public event PathNotFoundEventHandler PathNotFound;
         public event HandleExceptionEventHandler HandleException;
 
-
         public int Port { get; private set; }
         public HttpListener Server { get; private set; }
         public bool IsRunning { get; private set; } = false;
